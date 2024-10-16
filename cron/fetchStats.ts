@@ -59,10 +59,7 @@ async function main() {
     return
   }
   console.log('Deploying.');
-  const { stdout: stdout2, stderr: stderr2 } = await execPromise(`
-    export PATH=/home/confusedsammie/.nvm/versions/node/v18.12.0/bin:$PATH && \
-    /home/confusedsammie/.nvm/versions/node/v18.12.0/bin/npm run --prefix ${rootDir} deploy
-  `);
+  const { stdout: stdout2, stderr: stderr2 } = await execPromise(`npm run --prefix ${rootDir} deploy`);
   
   
   console.log(stdout2);
