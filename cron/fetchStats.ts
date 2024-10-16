@@ -51,7 +51,7 @@ async function main() {
   await fs.writeFile(timestamp, JSON.stringify({updated: Date.now()}));
   console.log('Wrote new data file and timestamp.');
   const rootDir = path.normalize(path.join(__dirname, '..'))
-  console.log(rootDir)
+  console.log('rootdir = ' + rootDir)
   // if no current git changes
   const { stdout, stderr } = await execPromise(`git -C ${rootDir} status --porcelain`);
   if(stdout || stderr) {
