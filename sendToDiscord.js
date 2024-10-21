@@ -24,8 +24,9 @@ function sendToDiscord() {
       return `**${displayName}** (${connectCode.code})\nRating: ${rankedNetplayProfile.ratingOrdinal}\nWins: ${rankedNetplayProfile.wins}, Losses: ${rankedNetplayProfile.losses}`;
     }).join('\n\n'); // Separate each player with a double new line for better readability
 
+    
     const message = JSON.stringify({
-      content: `**Player Rankings:**\n${messageContent}`
+      content: '**Player Rankings:**\n' + messageContent
     });
 
     // Parse the webhook URL
@@ -45,11 +46,12 @@ function sendToDiscord() {
     // Create the request
     const req = https.request(options, (res) => {
       let responseData = '';
-
       // Collect response data
       res.on('data', (chunk) => {
         responseData += chunk;
       });
+
+      
 
       // Handle end of the response
       res.on('end', () => {
