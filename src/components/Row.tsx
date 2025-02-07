@@ -53,12 +53,18 @@ export function Row({ player }: Props) {
   const totalGames = (player.rankedNetplayProfile.characters || []).reduce((acc, val) => acc + val.gameCount, 0);
   const rankChange = getRankChange(player);
   const ratingChange = getRatingChange(player);
+  const playerGlobalRank = player.rankedNetplayProfile.dailyGlobalPlacement || 'N/A';
+
+  if(player.displayName === 'ImMichaelBTW'){
+    console.log(player);
+  }
+  
 
   return (
     <tr className={`${playerRank.bgClass} border-separate border-spacing-2 border-b-2 border-gray-600`} >
       <td className="md:text-2xl text-gray-300 md:px-6 md:py-4 md:p-1 whitespace-nowrap">
         <div>{isActive && `#${player.rankedNetplayProfile.rank}`}</div>
-        {Boolean(rankChange) && changeArrow(rankChange)} </td>
+        {Boolean(rankChange) && changeArrow(rankChange)} <small>Global: {playerGlobalRank}</small></td>
       <td className="text-gray-100 md:px-6 md:py-4 p-1 whitespace-nowrap text-center overflow-hidden md:max-w-full max-w-[7rem] text-elipses">
         <a className="md:text-xl text-sm max-w-xs text-gray-300 hover:text-gray-500 hover:underline" href={codeToUrlSlug(player.connectCode.code)}>{player.displayName}</a>
         <div className="text-gray-300 text-xs">{player.connectCode.code}</div>
