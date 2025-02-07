@@ -72,7 +72,7 @@ export function Row({ player }: Props) {
           {playerRank.name}
         </div>
         <div className="text-gray-300 md:text-sm text-xs">
-          {isActive && player.rankedNetplayProfile.ratingOrdinal.toFixed(2)}
+          {isActive && player.rankedNetplayProfile.ratingOrdinal.toFixed(1)}
           {isActive && Boolean(ratingChange) && changePlusMinus(ratingChange)}
         </div>
 
