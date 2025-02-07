@@ -15,13 +15,13 @@ export function Row({ player }: Props) {
   }
 
   const codeToUrlSlug = (code: string) => {
-    return `https://slippi.gg/user/${codeToId(code)}` 
+    return `https://slippi.gg/user/${codeToId(code)}`
   }
 
   const changeIndicator = (change: number, indicators: string[]) => {
-    return <span className={`px-1 md:text-sm text-xs ${change > 0 ? 'text-green-500': 'text-red-500'}`}>
-     {change > 0? indicators[0]: indicators[1]}{Math.abs(change)}
-   </span>
+    return <span className={`px-1 md:text-sm text-xs ${change > 0 ? 'text-green-500' : 'text-red-500'}`}>
+      {change > 0 ? indicators[0] : indicators[1]}{Math.abs(change)}
+    </span>
   }
 
   const changeArrow = (change: number) => {
@@ -50,7 +50,7 @@ export function Row({ player }: Props) {
   const playerRank = getRank(player);
   const isActive = playerRank.name !== 'None';
   const totalSets = player.rankedNetplayProfile.wins + player.rankedNetplayProfile.losses;
-  const totalGames = (player.rankedNetplayProfile.characters || []).reduce((acc, val)=> acc + val.gameCount, 0);
+  const totalGames = (player.rankedNetplayProfile.characters || []).reduce((acc, val) => acc + val.gameCount, 0);
   const rankChange = getRankChange(player);
   const ratingChange = getRatingChange(player);
 
@@ -72,17 +72,18 @@ export function Row({ player }: Props) {
           {playerRank.name}
         </div>
         <div className="text-gray-300 md:text-sm text-xs">
-          {isActive && Math.floor(player.rankedNetplayProfile.ratingOrdinal)}
+          {isActive && player.rankedNetplayProfile.ratingOrdinal.toFixed(2)}
           {isActive && Boolean(ratingChange) && changePlusMinus(ratingChange)}
         </div>
+
       </td>
       <td className="md:text-sm text-xs text-gray-300 md:px-6 md:py-4 py-1  md:max-w-[18rem] max-w-[3rem]">
         <Characters player={player} totalGames={totalGames} />
       </td>
       <td className="md:text-xl text-gray-300 text-sm md:px-6 md:py-4 md:p-1 whitespace-nowrap">
         {Boolean(totalGames) && <><span className="text-green-500">{player.rankedNetplayProfile.wins ?? 0}</span><span className="md:p-1">/</span>
-        <span className="text-red-500">{player.rankedNetplayProfile.losses ?? 0}</span>
-      </>}
+          <span className="text-red-500">{player.rankedNetplayProfile.losses ?? 0}</span>
+        </>}
       </td>
     </tr>
   );
