@@ -54,7 +54,7 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col items-center h-screen p-8">
-      <h1 className="text-3xl m-4 text-center text-white">YOU NEED 2266.2 FOR GRANDMASTER ON 18TH FEBRUARY 2025</h1>
+      <h1 className="text-3xl m-4 text-center text-white">YOU NEED 2264 FOR GRANDMASTER ON 19TH FEBRUARY 2025</h1>
     
       <img className="h-48" src={ColoradoFlag} alt="colorado flag" />
       <h1 className="text-3xl m-4 text-center text-white">
