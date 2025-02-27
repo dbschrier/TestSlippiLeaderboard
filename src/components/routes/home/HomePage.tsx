@@ -55,7 +55,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col items-center h-screen p-8">
       <h1 className="text-3xl m-4 text-center text-white">
-        YOU NEED 2274 FOR GRANDMASTER ON 25TH FEBRUARY 2025
+        YOU NEED 2280 FOR GRANDMASTER ON 26TH FEBRUARY 2025
         </h1>
     
       <img className="h-48" src={ColoradoFlag} alt="colorado flag" />
