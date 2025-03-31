@@ -29,6 +29,17 @@ const getPlayers = async () => {
     .filter((data: any) => data?.data?.getConnectCode?.user)
     .map((data: any) => data.data.getConnectCode.user);
     console.log(unsortedPlayers)
+    console.log(`${results.length} results total`);
+console.log(`${validResults.length} successful results`);
+console.log(`${unsortedPlayers.length} valid user profiles`);
+results.forEach((r, i) => {
+  if (r instanceof Error) {
+    console.warn(`Error for ${codes[i]}: ${r.message}`);
+  } else if (!r?.data?.getConnectCode?.user) {
+    console.warn(`No user for ${codes[i]}`);
+  }
+});
+
   return unsortedPlayers.sort((p1, p2) =>
     p2.rankedNetplayProfile.ratingOrdinal - p1.rankedNetplayProfile.ratingOrdinal)
 }
