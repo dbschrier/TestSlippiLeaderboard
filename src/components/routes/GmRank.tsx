@@ -5,24 +5,23 @@ const ORDINAL_SCALING = 25;
 const ORDINAL_OFFSET = 1100;
 const SLIPPI_API = "https://gql-gateway-dot-slippi.uc.r.appspot.com/graphql";
 
-// Converts mu/sigma to Slippi-style ordinal
+// Convert mu/sigma to ordinal rating
 const slippiOrdinal = (r: Rating): number =>
   ORDINAL_SCALING * (r.mu - 3 * r.sigma) + ORDINAL_OFFSET;
 
-// Parse query params from hash
-function getOpponentCodeFromHash(): string | null {
+// Try to extract opponent from URL hash
+const getOpponentCodeFromHash = (): string | null => {
   if (typeof window === "undefined") return null;
-  const hash = window.location.hash; // e.g. "#/GmRank?opponent=MEOW%2383"
+  const hash = window.location.hash;
   const queryIndex = hash.indexOf("?");
   if (queryIndex === -1) return null;
-
-  const queryString = hash.slice(queryIndex + 1); // remove everything before `?`
+  const queryString = hash.slice(queryIndex + 1);
   const params = new URLSearchParams(queryString);
   const raw = params.get("opponent");
   return raw ? decodeURIComponent(raw).toUpperCase() : null;
-}
+};
 
-// Fetch Slippi profile data from connect code
+// Fetch Slippi player profile from API
 const fetchSlippiProfile = async (code: string) => {
   const query = `
     query {
@@ -38,7 +37,7 @@ const fetchSlippiProfile = async (code: string) => {
       }
     }`;
 
-  const res = await fetch("https://gql-gateway-dot-slippi.uc.r.appspot.com/graphql", {
+  const res = await fetch(SLIPPI_API, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query }),
@@ -47,7 +46,7 @@ const fetchSlippiProfile = async (code: string) => {
   const json = await res.json();
   const user = json?.data?.getConnectCode?.user;
   if (!user || !user.rankedNetplayProfile) {
-    throw new Error(`Ranked profile not found for code: ${code}`);
+    throw new Error(`Ranked profile not found for ${code}`);
   }
 
   const { ratingMu, ratingSigma, ratingOrdinal } = user.rankedNetplayProfile;
@@ -60,46 +59,77 @@ const fetchSlippiProfile = async (code: string) => {
   };
 };
 
-export default function PredictTextOnly() {
+export default function GmRank() {
   const [text, setText] = useState("Loading...");
+  const [inputCode, setInputCode] = useState("");
+  const [opponentCode, setOpponentCode] = useState<string | null>(null);
+
+  const playerCode = "MNCH#724"; // Your main player
+
+  const predict = async (code: string) => {
+    try {
+      setText("Calculating...");
+      const [player, opponent] = await Promise.all([
+        fetchSlippiProfile(playerCode),
+        fetchSlippiProfile(code),
+      ]);
+
+      const [[win]] = rate([[{ mu: player.mu, sigma: player.sigma }], [{ mu: opponent.mu, sigma: opponent.sigma }]]);
+      const [, [loss]] = rate([[{ mu: opponent.mu, sigma: opponent.sigma }], [{ mu: player.mu, sigma: player.sigma }]]);
+
+      const currentOrdinal = player.ordinal;
+      const winOrdinal = slippiOrdinal(win);
+      const lossOrdinal = slippiOrdinal(loss);
+
+      const correctionFactor = 1.05;
+      const deltaWin = (winOrdinal - currentOrdinal) * correctionFactor;
+      const deltaLoss = (lossOrdinal - currentOrdinal) * correctionFactor;
+
+      setText(`Predicted Points vs ${opponent.name} | +${deltaWin.toFixed(1)} | ${deltaLoss.toFixed(1)}`);
+    } catch (err: any) {
+      setText(`Error: ${err.message}`);
+    }
+  };
 
   useEffect(() => {
-    const run = async () => {
-      try {
-        const opponentCode = getOpponentCodeFromHash();
-        const playerCode = "MNCH#724";
-
-        if (!opponentCode || !opponentCode.includes("#")) {
-          setText("Error: Opponent connect code missing or invalid (use ?opponent=TAG#123)");
-          return;
-        }
-
-        const [player, opponent] = await Promise.all([
-          fetchSlippiProfile(playerCode),
-          fetchSlippiProfile(opponentCode),
-        ]);
-
-        const [[win]] = rate([[{ mu: player.mu, sigma: player.sigma }], [{ mu: opponent.mu, sigma: opponent.sigma }]]);
-        const [, [loss]] = rate([[{ mu: opponent.mu, sigma: opponent.sigma }], [{ mu: player.mu, sigma: player.sigma }]]);
-
-        const winOrdinal = slippiOrdinal(win);
-        const lossOrdinal = slippiOrdinal(loss);
-
-        const deltaWin = winOrdinal - player.ordinal;
-        const deltaLoss = lossOrdinal - player.ordinal;
-
-        setText(`Predicted Points vs ${opponent.name} | +${deltaWin.toFixed(1)} | ${deltaLoss.toFixed(1)}`);
-      } catch (err: any) {
-        setText(`Error: ${err.message}`);
-      }
-    };
-
-    run();
+    const fromURL = getOpponentCodeFromHash();
+    if (fromURL) {
+      setOpponentCode(fromURL);
+      predict(fromURL);
+    }
   }, []);
 
   return (
-    <div style={{ padding: "2rem", fontSize: "1.5rem", fontFamily: "monospace" }}>
-      {text}
+    <div style={{ padding: "2rem", fontFamily: "monospace", fontSize: "1.3rem", textAlign: "center" }}>
+      <h2>Slippi Rating Predictor</h2>
+
+      <div style={{ marginBottom: "1rem" }}>
+        <label>
+          Opponent Code:{" "}
+          <input
+            type="text"
+            placeholder="e.g. CHIP#947"
+            value={inputCode}
+            onChange={(e) => setInputCode(e.target.value.toUpperCase())}
+            style={{ fontSize: "1rem", padding: "0.3rem", width: "200px" }}
+          />
+        </label>
+        <button
+          onClick={() => {
+            if (inputCode.includes("#")) {
+              setOpponentCode(inputCode);
+              predict(inputCode);
+            } else {
+              setText("Enter a valid connect code like TAG#123");
+            }
+          }}
+          style={{ marginLeft: "1rem", fontSize: "1rem", padding: "0.4rem 1rem" }}
+        >
+          Predict
+        </button>
+      </div>
+
+      <div>{text}</div>
     </div>
   );
 }
