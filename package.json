@@ -30,6 +30,7 @@
     "limiter": "^2.1.0",
     "null-loader": "^4.0.1",
     "open-color": "^1.8.0",
+    "openskill": "^4.1.0",
     "postcss": "^8.4.20",
     "postcss-loader": "^7.0.2",
     "postcss-preset-env": "^7.8.3",
