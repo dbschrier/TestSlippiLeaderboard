@@ -68,7 +68,7 @@ export default function GmRank() {
   const [inputCode, setInputCode] = useState("");
   const [opponentCode, setOpponentCode] = useState<string | null>(null);
 
-  const playerCode = "MNCH#724"; // Your main player
+  const playerCode = "MEW#495"; // Your main player
   const options: Options = {
     tau: TAU,
     mu: 25,
@@ -106,8 +106,7 @@ export default function GmRank() {
       const deltaWin = (winOrdinal - currentOrdinal);
       const deltaLoss = (lossOrdinal - currentOrdinal);
 
-      setText(`${opponent.name} (${opponent.ordinal.toFixed(1)}) | +${deltaWin.toFixed(1)} | ${deltaLoss.toFixed(1)}`);
-
+      setText(`Predicted Points vs ${opponent.name} | +${deltaWin.toFixed(1)} | ${deltaLoss.toFixed(1)}`);
     } catch (err: any) {
       setText(`Error: ${err.message}`);
     }
@@ -123,7 +122,7 @@ export default function GmRank() {
 
   return (
     <div style={{ padding: "2rem", fontFamily: "monospace", fontSize: "1.3rem", textAlign: "center" }}>
-      <h2>Slippi Rating Predictor for The Munch</h2>
+      <h2>Slippi Rating Predictor for Mew2Girl</h2>
 
       <div style={{ marginBottom: "1rem" }}>
         <label>
