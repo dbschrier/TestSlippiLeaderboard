@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { rate, Rating } from "openskill";
+import { rate, Rating, Options } from "openskill";
 
 const ORDINAL_SCALING = 25;
 const ORDINAL_OFFSET = 1100;
+const TAU = 0.3;
 const SLIPPI_API = "https://gql-gateway-dot-slippi.uc.r.appspot.com/graphql";
 
 // Convert mu/sigma to ordinal rating
@@ -51,6 +52,9 @@ const fetchSlippiProfile = async (code: string) => {
 
   const { ratingMu, ratingSigma, ratingOrdinal } = user.rankedNetplayProfile;
 
+
+
+
   return {
     mu: ratingMu,
     sigma: ratingSigma,
@@ -65,7 +69,13 @@ export default function GmRank() {
   const [opponentCode, setOpponentCode] = useState<string | null>(null);
 
   const playerCode = "MNCH#724"; // Your main player
-
+  const options: Options = {
+    tau: TAU,
+    mu: 25,
+    sigma: 25 / 3,
+    limitSigma: true,
+    preventSigmaIncrease: true,
+  };
   const predict = async (code: string) => {
     try {
       setText("Calculating...");
@@ -74,16 +84,27 @@ export default function GmRank() {
         fetchSlippiProfile(code),
       ]);
 
-      const [[win]] = rate([[{ mu: player.mu, sigma: player.sigma }], [{ mu: opponent.mu, sigma: opponent.sigma }]]);
-      const [, [loss]] = rate([[{ mu: opponent.mu, sigma: opponent.sigma }], [{ mu: player.mu, sigma: player.sigma }]]);
+      /*const [[win]] = rate([[{ mu: player.mu, sigma: player.sigma }], [{ mu: opponent.mu, sigma: opponent.sigma }]]);
+      const [, [loss]] = rate([[{ mu: opponent.mu, sigma: opponent.sigma }], [{ mu: player.mu, sigma: player.sigma }]]);*/
+      const [[win]] = rate(
+        [[{ mu: player.mu, sigma: player.sigma }], [{ mu: opponent.mu, sigma: opponent.sigma }]],
+        options
+      );
+
+      const [, [loss]] = rate(
+        [[{ mu: opponent.mu, sigma: opponent.sigma }], [{ mu: player.mu, sigma: player.sigma }]],
+        options
+      );
+
+
 
       const currentOrdinal = player.ordinal;
       const winOrdinal = slippiOrdinal(win);
       const lossOrdinal = slippiOrdinal(loss);
 
-      const correctionFactor = 1.07;
+      //const correctionFactor = 1.07;
       const deltaWin = (winOrdinal - currentOrdinal);
-      const deltaLoss = (lossOrdinal - currentOrdinal) * correctionFactor;
+      const deltaLoss = (lossOrdinal - currentOrdinal);
 
       setText(`Predicted Points vs ${opponent.name} | +${deltaWin.toFixed(1)} | ${deltaLoss.toFixed(1)}`);
     } catch (err: any) {
