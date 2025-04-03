@@ -81,8 +81,8 @@ export default function GmRank() {
       const winOrdinal = slippiOrdinal(win);
       const lossOrdinal = slippiOrdinal(loss);
 
-      const correctionFactor = 1.05;
-      const deltaWin = (winOrdinal - currentOrdinal) * correctionFactor;
+      const correctionFactor = 1.07;
+      const deltaWin = (winOrdinal - currentOrdinal);
       const deltaLoss = (lossOrdinal - currentOrdinal) * correctionFactor;
 
       setText(`Predicted Points vs ${opponent.name} | +${deltaWin.toFixed(1)} | ${deltaLoss.toFixed(1)}`);
@@ -101,7 +101,7 @@ export default function GmRank() {
 
   return (
     <div style={{ padding: "2rem", fontFamily: "monospace", fontSize: "1.3rem", textAlign: "center" }}>
-      <h2>Slippi Rating Predictor</h2>
+      <h2>Slippi Rating Predictor for The Munch</h2>
 
       <div style={{ marginBottom: "1rem" }}>
         <label>
