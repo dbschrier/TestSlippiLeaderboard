@@ -106,7 +106,7 @@ export default function GmRank() {
       const deltaWin = (winOrdinal - currentOrdinal);
       const deltaLoss = (lossOrdinal - currentOrdinal);
 
-      setText(`${opponent.name} (${opponent.ordinal.toFixed(1)}) | +${deltaWin.toFixed(1)} | ${deltaLoss.toFixed(1)}`);
+      setText(`${opponent.name} (${opponent.ordinal.toFixed(1)}) | Win: +${deltaWin.toFixed(1)} | Loss: ${deltaLoss.toFixed(1)}`);
 
     } catch (err: any) {
       setText(`Error: ${err.message}`);
