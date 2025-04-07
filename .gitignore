@@ -13,3 +13,7 @@ dist
 secrets/*
 cron/data/*
 cron/logs/*
+h -u origin main
+package.json.save
+package.json.save.1
+setting.js.save
